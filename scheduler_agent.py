@@ -19,8 +19,8 @@ class SchedulerAgent:
             try:
                 title, person, dt, dur = parser.parse(input_text)
                 if title:
-                    # Use the full title returned by the parser (includes person)
-                    event_title = title
+                    # Compose the event title using the parsed title and person
+                    event_title = f"{title} with {person}"
 
                     # Create event or simulate
                     if self.calendar:
