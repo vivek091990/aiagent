@@ -17,3 +17,8 @@ Download google credentials json from Google console.
 ```
 
 The agent now composes event titles in the form `"<title> with <person>"`.
+Install dependencies using pip:
+
+```
+pip install -r requirements.txt
+```

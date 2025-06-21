@@ -1,3 +1,4 @@
+import os
 from parser.gpt_parser import GPTParser
 from parser.regex_parser import RegexParser
 from calendar_client import CalendarClient
@@ -7,8 +8,15 @@ class SchedulerAgent:
     def __init__(self):
         # Initialize parsers: GPT first, then regex fallback
         self.parsers = [GPTParser(), RegexParser()]
-        # Initialize calendar client if Google is configured
-        self.calendar = CalendarClient() if Config.GOOGLE_TOKEN_PATH else None
+        # Initialize calendar client if Google token is available
+        if Config.GOOGLE_TOKEN_PATH and os.path.exists(Config.GOOGLE_TOKEN_PATH):
+            try:
+                self.calendar = CalendarClient()
+            except Exception:
+                # Calendar client could not be created
+                self.calendar = None
+        else:
+            self.calendar = None
 
     def schedule(self, input_text: str):
         """
