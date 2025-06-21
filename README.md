@@ -6,3 +6,9 @@ GOOGLE_CREDENTIALS_JSON=credentials.json
 TIMEZONE=US/Pacific
 
 Download google credentials json from Google console.
+
+Install dependencies using pip:
+
+```
+pip install -r requirements.txt
+```
