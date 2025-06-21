@@ -1,0 +1,23 @@
+# Environment variables
+.env
+
+# Authentication and credentials
+token.pickle
+credentials.json
+
+# Python cache and packaging
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Virtual environment
+venv/
+.venv/
+
+# Logs and temporary files
+*.log
+*.tmp
+*.bak
+
+# macOS files
+.DS_Store
