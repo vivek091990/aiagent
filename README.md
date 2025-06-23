@@ -12,11 +12,12 @@ Download google credentials json from Google console.
 ```
 >>> from scheduler_agent import SchedulerAgent
 >>> agent = SchedulerAgent()
->>> agent.schedule("Set a sync call with Sarah tomorrow at 2pm")
+>>> agent.schedule("Set a sync call with Sarah tomorrow at 2pm for 45 minutes")
 "📝 Simulated: 'Sync call with Sarah' at 2024-05-22 02:00 PM UTC"
 ```
 
 The agent now composes event titles in the form `"<title> with <person>"`.
+Specify a duration with phrases like `for 45 minutes`. If omitted, events last 30 minutes by default.
 Install dependencies using pip:
 
 ```
