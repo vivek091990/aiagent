@@ -15,7 +15,11 @@ class GPTParser(BaseParser):
         if not self.client:
             raise RuntimeError("OpenAI client not configured")
         today = datetime.now(pytz.timezone(Config.TIMEZONE)).strftime('%Y-%m-%d')
-        prompt = f"Assume today's date is {today}. Extract meeting details from: '{text}'. Output only JSON with keys: title, person, datetime."
+        prompt = (
+            f"Assume today's date is {today}. Extract meeting details from: '{text}'. "
+            "Output only JSON with keys: title, person, datetime, duration. "
+            "Duration should be in minutes if provided; default to 30."
+        )
         response = self.client.chat.completions.create(
             model='gpt-4o-mini',
             messages=[
@@ -28,4 +32,5 @@ class GPTParser(BaseParser):
         clean = re.sub(r'^```(?:json)?|```$', '', raw.strip())
         data = json.loads(clean)
         dt = date_parser.parse(data['datetime'])
-        return data['title'], data.get('person', 'Unnamed'), dt, 30
+        duration = int(data.get('duration', 30))
+        return data['title'], data.get('person', 'Unnamed'), dt, duration

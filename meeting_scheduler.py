@@ -87,7 +87,8 @@ class MeetingSchedulerAgent:
         prompt = (
             f"Assume today's date is {today}. "
             "Extract the meeting details from this input. "
-            "Return ONLY the JSON object with keys: title, person (name only), datetime (ISO 8601)."
+            "Return ONLY the JSON object with keys: title, person (name only), "
+            "datetime (ISO 8601), duration. Duration should be minutes if provided."\
             f"\nInput: '{user_input}'"
         )
         pretty_print("PROMPT TO GPT", prompt)
@@ -118,19 +119,28 @@ class MeetingSchedulerAgent:
                 dt = dt.astimezone(self.timezone)
             title = parsed['title'].strip()
             person = self.resolve_contact_name(parsed.get('person', 'Unnamed'))
-            return f"{title} with {person}", dt, 30
+            duration = int(parsed.get('duration', 30))
+            return f"{title} with {person}", dt, duration
         except Exception as e:
             print("⚠️ GPT parse failed:", e)
             return None, None, None
 
     def regex_parse_input(self, user_input):
-        match = re.search(r"(?i)set a ([\w:/\+\- ]+) (?:meeting|call|appointment)(?: with ([^@\d\n]+))?(?: on | at )?(.*?)$", user_input)
+        match = re.search(
+            r"(?i)set a ([\w:/\+\- ]+) (?:meeting|call|appointment)"
+            r"(?: with ([^@\d\n]+))?"
+            r"(?: on | at )?(.*?)"
+            r"(?: for (\d+)\s*(?:minutes?|mins?|hours?|hrs?|hr))?"
+            r"$",
+            user_input,
+        )
         if not match:
             return None, None, None
         title_prefix = match.group(1).strip().capitalize()
         raw_person = match.group(2)
         person = self.resolve_contact_name(raw_person) if raw_person else "Unnamed"
         time_text = match.group(3)
+        duration_raw = match.group(4)
         try:
             dt = date_parser.parse(time_text, fuzzy=True)
             if dt.tzinfo is None:
@@ -140,7 +150,8 @@ class MeetingSchedulerAgent:
         except Exception as e:
             print(f"Failed to parse date/time: {e}")
             return None, None, None
-        return f"{title_prefix} with {person}", dt, 30
+        duration = int(duration_raw) if duration_raw else 30
+        return f"{title_prefix} with {person}", dt, duration
 
     def parse_input(self, user_input):
         title, dt, dur = self.gpt_parse_input(user_input)
